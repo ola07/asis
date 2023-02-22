@@ -1,69 +1,26 @@
-# Ruby CircleCI 2.1 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-ruby/ for more details
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-orbs:
-  ruby: circleci/ruby@1.7.1
-
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build_and_test:
-    parameters:
-      ruby_version:
-        type: string
-      elasticsearch_version:
-        type: string
-
+  say-hello:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: cimg/ruby:<< parameters.ruby_version >>
-      - image: redis:6.2
-      - image: docker.elastic.co/elasticsearch/elasticsearch:<< parameters.elasticsearch_version >>
-        environment:
-          - xpack.security.enabled: false
-          - discovery.type: single-node
-
-    working_directory: ~/app
-
+      - image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
       - run:
-          name: Copy config files for Flickr
-          command: |
-            cp -p config/flickr.yml.example config/flickr.yml
-      # Install gems with Bundler
-      - ruby/install-deps:
-          # Need to clear the gem cache? Set or bump the CACHE_VERSION in your
-          # CircleCi project: Project Settings > Environment Variables
-          key: gems-ruby-<< parameters.ruby_version >>-v{{ .Environment.CACHE_VERSION }}
-      - run:
-          name: Prepare Code Climate Test Reporter
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-            ./cc-test-reporter before-build
-      - run:
-          name: Wait for Elasticsearch
-          command: dockerize --wait http://localhost:9200 -timeout 1m
-      - ruby/rspec-test:
-          # Need to temporarily test with a particular seed? Use:
-          # order: rand:123
-          order: rand
-      - run:
-          name: Report Test Results
-          command: |
-            ./cc-test-reporter after-build
+          name: "Say hello"
+          command: "echo Hello, World!"
 
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  build_and_test:
+  say-hello-workflow:
     jobs:
-      - build_and_test:
-          name: "Ruby << matrix.ruby_version >>, ES << matrix.elasticsearch_version >>"
-          matrix:
-            parameters:
-              ruby_version:
-                - 2.7.5
-                - 3.0.3
-                # not yet compatible with 3.1 or 3.2
-              elasticsearch_version:
-                - 7.17.7
-                # not yet compatible with Elasticsearch 8
+      - say-hello

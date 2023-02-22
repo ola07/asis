@@ -1,4 +1,4 @@
-ASIS Server
+ASIS Server for Ola
 ==============
 
 [![CircleCI](https://circleci.com/gh/GSA/asis.svg?style=shield)](https://circleci.com/gh/GSA/asis)
@@ -169,4 +169,3 @@ You can send feedback via [Github Issues](https://github.com/GSA/oasis/issues).
 
 [Loren Siebert](https://github.com/loren) and [contributors](http://github.com/GSA/oasis/contributors).
 
-Testing asis
